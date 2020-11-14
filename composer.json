@@ -8,10 +8,14 @@
     "sort-packages": true
   },
   "require": {
+    "iampersistent/get-off-my-case": "^1.0",
     "psr/container": "^1.0",
     "php": "^7.4"
   },
   "require-dev": {
+    "codeception/codeception": "^4.0",
+    "codeception/module-asserts": "^1.0.0",
+    "phpspec/prophecy": "~1.0"
   },
   "minimum-stability": "dev",
   "autoload": {
