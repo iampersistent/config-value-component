@@ -3,7 +3,7 @@
   "type": "library",
   "description": "",
   "keywords": [],
-  "license": "",
+  "license": "MIT",
   "config": {
     "sort-packages": true
   },
