@@ -52,7 +52,7 @@ final class GatherConfigValues
                         $partKey => $valueArray,
                     ] ;
                 }
-                $envValues = array_merge($envValues, $valueArray);
+                $envValues = array_merge_recursive($envValues, $valueArray);
             }
         }
 

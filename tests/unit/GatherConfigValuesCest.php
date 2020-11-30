@@ -12,6 +12,9 @@ class GatherConfigValuesCest
 {
     public function testInvoke(UnitTester $I)
     {
+        $_SERVER['TESTING_DATA_ALPHA'] = 'alpha';
+        $_SERVER['TESTING_DATA_BETA'] = 'beta';
+        $_SERVER['TESTING_DATA_GAMMA'] = 'gamma';
         $_SERVER['TESTING_NOT_SET_ANYWHERE'] = 'blah';
         $_SERVER['TESTING_OPTIONS_SIZE'] = 'large';
         $_SERVER['TESTING_TRUEORFALSE'] = false;
@@ -89,56 +92,71 @@ class GatherConfigValuesCest
     private function expectedConfig(): array
     {
         return [
-            'default' => 'set',
-            'isExpected' => false,
-            'not' => [
+            'default'     => 'set',
+            'data'        => [
+                'alpha' => 'alpha',
+                'beta'  => 'beta',
+                'gamma' => 'gamma',
+            ],
+            'isExpected'  => false,
+            'not'         => [
                 'set' => [
                     'anywhere' => 'blah',
                 ],
             ],
-            'options' => [
+            'options'     => [
                 'color' => 'blue',
-                'size' => 'large',
+                'size'  => 'large',
             ],
             'trueOrFalse' => false,
-            'value' => 42,
-            'url' => 'https://zestic.com',
+            'value'       => 42,
+            'url'         => 'https://zestic.com',
         ];
     }
 
     private function expectedConfigNoDefaults(): array
     {
         return [
-            'isExpected' => false,
-            'not' => [
+            'data'        => [
+                'alpha' => 'alpha',
+                'beta'  => 'beta',
+                'gamma' => 'gamma',
+            ],
+            'isExpected'  => false,
+            'not'         => [
                 'set' => [
                     'anywhere' => 'blah',
                 ],
             ],
-            'options' => [
+            'options'     => [
                 'color' => 'blue',
-                'size' => 'large',
+                'size'  => 'large',
             ],
             'trueOrFalse' => false,
-            'value' => 42,
-            'url' => 'https://zestic.com',
+            'value'       => 42,
+            'url'         => 'https://zestic.com',
         ];
     }
 
     private function expectedConfigNoDefaultsNoConfig(): array
     {
         return [
-            'not' => [
+            'data'        => [
+                'alpha' => 'alpha',
+                'beta'  => 'beta',
+                'gamma' => 'gamma',
+            ],
+            'not'         => [
                 'set' => [
                     'anywhere' => 'blah',
                 ],
             ],
-            'options' => [
+            'options'     => [
                 'size' => 'large',
             ],
             'trueorfalse' => false,
-            'value' => 42,
-            'url' => 'https://zestic.com',
+            'value'       => 42,
+            'url'         => 'https://zestic.com',
         ];
     }
 }
