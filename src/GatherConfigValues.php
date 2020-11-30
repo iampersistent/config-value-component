@@ -13,19 +13,9 @@ final class GatherConfigValues
     {
         $values = $this->getDefaultValues($default);
 
-        $configedValues = $container->get('config')[$configName] ?? [];
-        $values = $this->configMerge($values, $configedValues);
-
-        $env = $_SERVER;
-        $envValues = [];
-        $prefix = strtoupper($configName) . '_';
-        $prefixLength = strlen($prefix);
-        foreach ($env as $key => $value) {
-            if (0 === strpos($key, $prefix)) {
-                $envKey = strtolower(substr($key, $prefixLength));
-                $envValues[$envKey] = $value;
-            }
-        }
+        $configuredValues = $container->get('config')[$configName] ?? [];
+        $values = $this->configMerge($values, $configuredValues);
+        $envValues = $this->extractEnvValues($configName);
 
         return $this->envMerge($values, $envValues);
     }
@@ -44,37 +34,56 @@ final class GatherConfigValues
         return $configValues;
     }
 
-    private function envMerge(array $startingConfig, array $envValues): array
+    private function extractEnvValues(string $configName): array
     {
-        foreach ($startingConfig as $key => $value) {
-            $envKey = (new SnakeCase)($key);
-            if (isset($envValues[$envKey])) {
-                $startingConfig[$key] = $envValues[$envKey];
-                unset($envValues[$key]);
+        $env = $_SERVER;
+        $envValues = [];
+        $prefix = strtoupper($configName) . '_';
+        $prefixLength = strlen($prefix);
+        foreach ($env as $key => $value) {
+            if (0 === strpos($key, $prefix)) {
+                $valueArray = [];
+                $envKey = strtolower(substr($key, $prefixLength));
+                $parts = array_reverse(explode('_', $envKey));
+                $innerKey = array_shift($parts);
+                $valueArray[$innerKey] = $value;
+                foreach ($parts as $partKey) {
+                    $valueArray = [
+                        $partKey => $valueArray,
+                    ] ;
+                }
+                $envValues = array_merge($envValues, $valueArray);
+            }
+        }
 
+        return $envValues;
+    }
+
+    private function envMerge(array $startingArray, array $envArray): array
+    {
+        foreach ($startingArray as $key => $value) {
+            $envKey = strtolower($key);
+            if (!isset($envArray[$envKey]) && !isset($envArray[$key])) {
                 continue;
             }
+            $envValue = $envArray[$envKey] ?? $envArray[$key];
+
             if (is_array($value)) {
-                $subEnvValues = [];
-                $prefix = $key . '_';
-                $prefixLength = strlen($prefix);
-                foreach ($envValues as $envValueKey => $envValue) {
-                    if (0 === strpos($envValueKey, $prefix)) {
-                        $envKey = substr($envValueKey, $prefixLength);
-                        $subEnvValues[$envKey] = $envValue;
-                        unset($envValues[$envValueKey]);
-                    }
-                }
-                if (!empty($subEnvValues)) {
-                    $startingConfig[$key] = $this->envMerge($startingConfig[$key], $subEnvValues);
-                }
+                $startingArray[$key] = $this->envMerge($startingArray[$key], $envValue);
+            } else {
+                $startingArray[$key] = $envValue;
+            }
+            unset($envArray[$envKey], $envArray[$key]);
+        }
+        foreach ($envArray as $key => $envValue) {
+            if (is_array($envValue) && isset($startingArray[$key])) {
+                $startingArray[$key] = $this->envMerge($startingArray[$key], $envValue);
+            } else {
+                $startingArray[$key] = $envValue;
             }
         }
-        foreach ($envValues as $key => $value) {
-            $startingConfig[(new CamelCase)($key)] = $value;
-        }
 
-        return $startingConfig;
+        return $startingArray;
     }
 
     private function getDefaultValues(array $defaults): array

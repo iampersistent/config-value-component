@@ -14,9 +14,9 @@ class GatherConfigValuesCest
     {
         $_SERVER['TESTING_NOT_SET_ANYWHERE'] = 'blah';
         $_SERVER['TESTING_OPTIONS_SIZE'] = 'large';
-        $_SERVER['TESTING_TRUE_OR_FALSE'] = false;
+        $_SERVER['TESTING_TRUEORFALSE'] = false;
         $_SERVER['TESTING_VALUE'] = 42;
-        $_SERVER['TESTING_URL'] = 'https://xaddax.com';
+        $_SERVER['TESTING_URL'] = 'https://zestic.com';
 
         $defaults = [
             'default' => 'set',
@@ -91,14 +91,18 @@ class GatherConfigValuesCest
         return [
             'default' => 'set',
             'isExpected' => false,
-            'notSetAnywhere' => 'blah',
+            'not' => [
+                'set' => [
+                    'anywhere' => 'blah',
+                ],
+            ],
             'options' => [
                 'color' => 'blue',
                 'size' => 'large',
             ],
             'trueOrFalse' => false,
             'value' => 42,
-            'url' => 'https://xaddax.com',
+            'url' => 'https://zestic.com',
         ];
     }
 
@@ -106,25 +110,35 @@ class GatherConfigValuesCest
     {
         return [
             'isExpected' => false,
-            'notSetAnywhere' => 'blah',
+            'not' => [
+                'set' => [
+                    'anywhere' => 'blah',
+                ],
+            ],
             'options' => [
                 'color' => 'blue',
                 'size' => 'large',
             ],
             'trueOrFalse' => false,
             'value' => 42,
-            'url' => 'https://xaddax.com',
+            'url' => 'https://zestic.com',
         ];
     }
 
     private function expectedConfigNoDefaultsNoConfig(): array
     {
         return [
-            'notSetAnywhere' => 'blah',
-            'optionsSize' => 'large',
-            'trueOrFalse' => false,
+            'not' => [
+                'set' => [
+                    'anywhere' => 'blah',
+                ],
+            ],
+            'options' => [
+                'size' => 'large',
+            ],
+            'trueorfalse' => false,
             'value' => 42,
-            'url' => 'https://xaddax.com',
+            'url' => 'https://zestic.com',
         ];
     }
 }
