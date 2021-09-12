@@ -38,6 +38,7 @@ final class GatherConfigValues
     {
         $env = $_SERVER;
         $envValues = [];
+        $configName = str_replace('.', '_', $configName);
         $prefix = strtoupper($configName) . '_';
         $prefixLength = strlen($prefix);
         foreach ($env as $key => $value) {
