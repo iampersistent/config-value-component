@@ -13,7 +13,7 @@ final class GatherConfigValues
     {
         $values = $this->getDefaultValues($default);
 
-        $configuredValues = $container->get('config')[$configName] ?? [];
+        $configuredValues = $this->getConfiguredValues($container, $configName);
         $values = $this->configMerge($values, $configuredValues);
         $envValues = $this->extractEnvValues($configName);
 
@@ -85,6 +85,25 @@ final class GatherConfigValues
         }
 
         return $startingArray;
+    }
+
+    private function getConfiguredValues(ContainerInterface $container, string $configName): array
+    {
+        $config = $container->get('config');
+
+        if (!empty($config[$configName])) {
+            return $config[$configName];
+        }
+
+        $parts = explode('.', $configName);
+        foreach ($parts as $part) {
+            if (empty($config[$part])) {
+                return [];
+            }
+            $config = $config[$part];
+        }
+
+        return $config;
     }
 
     private function getDefaultValues(array $defaults): array

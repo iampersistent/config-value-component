@@ -61,6 +61,31 @@ class GatherConfigValuesCest
         $I->assertEquals($this->expectedConfig(), $values);
     }
 
+    public function testInvokeWithDotsAsKeys(UnitTester $I)
+    {
+        $defaults = $this->testValuesDefaults();
+        $prophet = new Prophet();
+        $prophecy = $prophet->prophesize();
+        $prophecy->willImplement(ContainerInterface::class);
+        $config = [
+            'test' => [
+                'values' => [
+                    'isExpected'  => false,
+                    'options'     => [
+                        'color' => 'blue',
+                    ],
+                    'trueOrFalse' => true,
+                ],
+            ],
+        ];
+        $prophecy->get('config')->willReturn($config);
+        $container = $prophecy->reveal();
+
+        $values = (new GatherConfigValues)($container, 'test.values', $defaults);
+
+        $I->assertEquals($this->expectedConfig(), $values);
+    }
+
     public function testInvokeWithNoDefault(UnitTester $I)
     {
         $prophet = new Prophet();
