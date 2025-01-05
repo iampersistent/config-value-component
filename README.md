@@ -2,6 +2,11 @@
 
 ### Pull config from .env values or from Laminas config
 
+## Install
+```bash
+composer require iampersistent/config-value-component
+```
+
 ## Usage
 ```php
   $config = (new GatherConfigValues)($container, 'print');
